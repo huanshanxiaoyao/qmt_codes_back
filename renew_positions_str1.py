@@ -47,9 +47,11 @@ def init_mystock(C, code_list):
         
         # 设置当前持仓数量和成本价（如果有持仓）
         for position in positions:
-            if position.m_strInstrumentID == code:
+            ret_code = '%s.%s'%(position.m_strInstrumentID, position.m_strExchangeID)
+            if ret_code == code:
                 stock.current_position = position.m_nVolume
                 stock.cost_price = position.m_dOpenPrice
+                print(f"股票{code}初始化信息: 当前持仓={stock.current_position}, 成本价={stock.cost_price:.2f}, 最大持仓={stock.max_position}, 最小持仓={stock.min_position}")
                 break
         
         code2mystock[code] = stock
@@ -168,7 +170,11 @@ def handlebar(C):
     
     # 判断大盘是否学好（当前价格大于开盘价）
     market_good = bj50_tick['lastPrice'] > bj50_tick['open']
-    market_rise_percent = (bj50_tick['lastPrice'] / bj50_tick['open'] - 1) * 100
+    if bj50_tick['open'] > 0:
+        market_rise_percent = (bj50_tick['lastPrice'] / bj50_tick['open'] - 1) * 100
+    else:
+        print("警告：BJ50开盘价为0")
+        return
     
     # 对每一个目标代码进行交易决策
     for code, stock in C.code2mystock.items():
@@ -186,8 +192,10 @@ def handlebar(C):
         avg_ratio = current_price / avg_price if avg_price else 1
         
         # 买入条件：大盘学好，行业没有严重下跌，股票价格低于成本或均值，持仓未满
+        # 买入条件
         if (market_good and not industry_bad and 
-            (current_price < stock.cost_price * stock.buy_threshold or 
+            ((stock.cost_price == 0) or  # 没有持仓时
+             (current_price < stock.cost_price * stock.buy_threshold) or 
              avg_ratio < 0.9) and 
             stock.current_position < stock.max_position):
             
