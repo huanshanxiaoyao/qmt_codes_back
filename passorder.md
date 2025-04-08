@@ -1,5 +1,6 @@
 迅投 QMT 中的综合下单函数
 综合下单函数，用于股票、期货、期权等下单和新股、新债申购、融资融券等交易操作推荐使用
+
 调用方法
 passorder(
     opType, orderType, accountid
