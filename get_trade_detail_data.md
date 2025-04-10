@@ -3,7 +3,6 @@ get_trade_detail_data(accountID, strAccountType, strDatatype) 可以查询持仓
 
 调用方法 get_trade_detail_data(accountID, strAccountType, strDatatype, strategyName)时，通过strategyName来区分不同的策略标记
 
-
 示例代码
 
 #coding:gbk
